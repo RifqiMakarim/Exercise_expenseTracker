@@ -69,6 +69,11 @@
                 </tr>
             </tfoot>
         </table>
+
+        <div class="creator d-flex justify-content-end p-2">
+            <p>by Rifqi Makarim</p>
+        </div>
+
     </div>
 </body>
 </html>

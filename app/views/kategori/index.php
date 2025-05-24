@@ -11,7 +11,7 @@
 <body>
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Manajemen Kategori</h1>
+        <h1>Daftar Kategori</h1>
         <a href="/kategori/tambah" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Tambah Kategori
         </a>
