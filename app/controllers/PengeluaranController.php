@@ -26,7 +26,15 @@ class PengeluaranController {
         
         $this->tampilkanView('pengeluaran/index', $data);
     }
-
+    
+    private function hitungTotal() {
+        $total = 0;
+        foreach ($this->pengeluaranModel->semuaPengeluaran() as $p) {
+            $total += $p['jumlah'];
+        }
+        return $total;
+    }
+    
     // Tampilkan form tambah
     public function tambah() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -35,34 +43,7 @@ class PengeluaranController {
         $data['kategori'] = $this->kategoriModel->semuaKategori();
         $this->tampilkanView('pengeluaran/tambah', $data);
     }
-
-    private function hitungTotal() {
-        $total = 0;
-        foreach ($this->pengeluaranModel->semuaPengeluaran() as $p) {
-            $total += $p['jumlah'];
-        }
-        return $total;
-    }
-
-    private function validasiInput($input) {
-        $errors = [];
-        
-        if (empty($input['kategori_id'])) {
-            $errors[] = "Kategori harus dipilih";
-        }
-        
-        if (empty($input['jumlah']) || $input['jumlah'] <= 0) {
-            $errors[] = "Jumlah harus lebih dari 0";
-        }
-        
-        if (empty($input['tanggal'])) {
-            $errors[] = "Tanggal harus diisi";
-        }
-        
-        return $errors;
-    }
     
-
     private function prosesTambah() {
         $errors = $this->validasiInput($_POST);
     
@@ -85,6 +66,27 @@ class PengeluaranController {
             exit;
         }
     }
+
+
+    private function validasiInput($input) {
+        $errors = [];
+        
+        if (empty($input['kategori_id'])) {
+            $errors[] = "Kategori harus dipilih";
+        }
+        
+        if (empty($input['jumlah']) || $input['jumlah'] <= 0) {
+            $errors[] = "Jumlah harus lebih dari 0";
+        }
+        
+        if (empty($input['tanggal'])) {
+            $errors[] = "Tanggal harus diisi";
+        }
+        
+        return $errors;
+    }
+    
+
 
     public function edit($id = null) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

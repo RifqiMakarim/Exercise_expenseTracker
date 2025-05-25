@@ -8,31 +8,18 @@ class KategoriController {
         $this->model = new KategoriModel();
     }
 
-    // Menampilkan daftar kategori
     public function index() {
         $data['kategori'] = $this->model->semuaKategori();
         $this->tampilkanView('kategori/index', $data);
     }
 
-    // Menampilkan form tambah kategori
     public function tambah() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->prosesTambah();
         }
         $this->tampilkanView('kategori/tambah');
     }
-
-    // Menampilkan form edit kategori
-    public function edit($id) {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->prosesEdit();
-        }
-        
-        $data['kategori'] = $this->model->getById($id);
-        $this->tampilkanView('kategori/edit', $data);
-    }
-
-    // Proses tambah kategori
+    
     private function prosesTambah() {
         $data = [
             'nama' => htmlspecialchars($_POST['nama']),
@@ -46,7 +33,16 @@ class KategoriController {
         }
     }
 
-    // Proses edit kategori
+    public function edit($id) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->prosesEdit();
+        }
+        
+        $data['kategori'] = $this->model->getById($id);
+        $this->tampilkanView('kategori/edit', $data);
+    }
+
+
     private function prosesEdit() {
         $data = [
             'id' => (int)$_POST['id'],
@@ -61,7 +57,6 @@ class KategoriController {
         }
     }
 
-    // Proses hapus kategori
     public function hapus($id) {
         if ($this->model->digunakanDiPengeluaran($id)) {
             $_SESSION['error'] = "Kategori tidak bisa dihapus karena masih digunakan dalam pengeluaran";
@@ -76,7 +71,6 @@ class KategoriController {
         exit;
     }
 
-    // Method untuk menampilkan view
     private function tampilkanView($view, $data = []) {
         extract($data);
         require __DIR__."/../views/{$view}.php";

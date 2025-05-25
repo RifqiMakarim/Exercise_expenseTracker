@@ -6,7 +6,6 @@
     <title>Expense Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
 </head>
 <body>
     <div class="d-flex justify-content-end p-2 me-3">
@@ -61,7 +60,7 @@
                 </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot>
+            <tfoot> 
                 <tr>
                     <th colspan="2">Total</th>
                     <th>Rp <?= number_format($total, 0, ',', '.') ?></th>
