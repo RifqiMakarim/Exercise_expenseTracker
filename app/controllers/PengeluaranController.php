@@ -35,9 +35,15 @@ class PengeluaranController {
         return $total;
     }
     
-    // Tampilkan form tambah
     public function tambah() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            
+            if (!isset($_POST['csrf_token']) || !Csrf::validateToken($_POST['csrf_token'])) {
+                $_SESSION['error'] = "Permintaan tidak valid atau sesi telah berakhir. Silakan coba lagi.";
+                unset($_SESSION['old_input']);
+                header("Location: /tambah"); 
+                exit;  
+            }
             $this->prosesTambah();
         }
         $data['kategori'] = $this->kategoriModel->semuaKategori();
@@ -49,6 +55,7 @@ class PengeluaranController {
     
         if (!empty($errors)) {
             $_SESSION['error'] = implode("<br>", $errors);
+            $_SESSION['old_input'] = $_POST;
             header("Location: /tambah");
             exit;
         }
@@ -61,8 +68,14 @@ class PengeluaranController {
         ];
 
         if ($this->pengeluaranModel->tambah($data)) {
+            unset($_SESSION['old_input']);
             $_SESSION['sukses'] = "Pengeluaran berhasil ditambahkan!";
             header("Location: /");
+            exit;
+        } else {
+            $_SESSION['error'] = "Gagal menambahkan pengeluaran. Silakan coba lagi.";
+            $_SESSION['old_input'] = $_POST;
+            header("Location: /tambah");
             exit;
         }
     }
@@ -90,6 +103,14 @@ class PengeluaranController {
 
     public function edit($id = null) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (!isset($_POST['csrf_token']) || !Csrf::validateToken($_POST['csrf_token'])) {
+                $_SESSION['error'] = "Permintaan tidak valid atau sesi telah berakhir. Silakan coba lagi.";
+                unset($_SESSION['old_input']);
+                header("Location: /edit/" . ($_POST['id'] ?? $id));
+                exit;
+            }
+
             $this->prosesEdit();
         }
         
@@ -97,11 +118,28 @@ class PengeluaranController {
             'kategori' => $this->kategoriModel->semuaKategori(),
             'pengeluaran' => $this->pengeluaranModel->getById($id)
         ];
-        
+
+        if (!$data['pengeluaran'] && $_SERVER['REQUEST_METHOD'] !== 'POST') { 
+            http_response_code(404);
+            echo "Pengeluaran tidak ditemukan.";
+            exit;
+        }    
+
         $this->tampilkanView('pengeluaran/edit', $data);
     }
-    
-    private function prosesEdit() {
+
+    private function prosesEdit()
+    {
+        $errors = $this->validasiInput($_POST);
+
+        if (!empty($errors)) {
+            $_SESSION['error'] = implode("<br>", $errors);
+            // Simpan input lama untuk repopulate form
+            $_SESSION['old_input'] = $_POST;
+            header("Location: /edit/" . $_POST['id']); // Kembali ke halaman edit
+            exit;
+        }
+
         $data = [
             'id' => (int)$_POST['id'],
             'kategori_id' => (int)$_POST['kategori_id'],
@@ -109,10 +147,17 @@ class PengeluaranController {
             'deskripsi' => htmlspecialchars($_POST['deskripsi']),
             'tanggal' => $_POST['tanggal']
         ];
-    
+
         if ($this->pengeluaranModel->update($data)) {
+            unset($_SESSION['old_input']); // Hapus input lama jika sukses
             $_SESSION['sukses'] = "Pengeluaran berhasil diupdate!";
             header("Location: /");
+            exit;
+        } else {
+            // Opsional: Tambahkan pesan error jika update gagal karena alasan lain
+            $_SESSION['error'] = "Gagal mengupdate pengeluaran. Silakan coba lagi.";
+            $_SESSION['old_input'] = $_POST;
+            header("Location: /edit/" . $_POST['id']);
             exit;
         }
     }

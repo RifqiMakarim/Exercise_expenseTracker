@@ -15,26 +15,54 @@ class KategoriController {
 
     public function tambah() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['csrf_token']) || !Csrf::validateToken($_POST['csrf_token'])) {
+                $_SESSION['error_kategori'] = "Permintaan tidak valid atau sesi telah berakhir. Silakan coba lagi.";
+                unset($_SESSION['old_kategori_input']);
+                header("Location: /kategori/tambah");
+                exit;
+            }
             $this->prosesTambah();
         }
         $this->tampilkanView('kategori/tambah');
     }
-    
-    private function prosesTambah() {
+
+    private function prosesTambah()
+    {
+        $errors = $this->validasiInput($_POST);
+
+        if (!empty($errors)) {
+            $_SESSION['error_kategori'] = implode("<br>", $errors); // Gunakan key session yang berbeda agar tidak konflik
+            $_SESSION['old_kategori_input'] = $_POST;
+            header("Location: /kategori/tambah");
+            exit;
+        }
+
         $data = [
-            'nama' => htmlspecialchars($_POST['nama']),
-            'deskripsi' => htmlspecialchars($_POST['deskripsi'])
+            'nama' => htmlspecialchars(trim($_POST['nama'])),
+            'deskripsi' => htmlspecialchars(trim($_POST['deskripsi']))
         ];
 
         if ($this->model->tambah($data)) {
+            unset($_SESSION['old_kategori_input']);
             $_SESSION['sukses'] = "Kategori berhasil ditambahkan!";
             header("Location: /kategori");
+            exit;
+        } else {
+            $_SESSION['error_kategori'] = "Gagal menambahkan kategori. Silakan coba lagi.";
+            $_SESSION['old_kategori_input'] = $_POST;
+            header("Location: /kategori/tambah");
             exit;
         }
     }
 
     public function edit($id) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['csrf_token']) || !Csrf::validateToken($_POST['csrf_token'])) {
+                $_SESSION['error_kategori'] = "Permintaan tidak valid atau sesi telah berakhir. Silakan coba lagi.";
+                unset($_SESSION['old_kategori_input']);
+                header("Location: /kategori/edit/" . ($_POST['id'] ?? $id));
+                exit;
+            }   
             $this->prosesEdit();
         }
         
@@ -42,17 +70,33 @@ class KategoriController {
         $this->tampilkanView('kategori/edit', $data);
     }
 
+    private function prosesEdit()
+    {
+        $errors = $this->validasiInput($_POST);
+        $id = (int)$_POST['id']; // Ambil ID untuk redirect jika error
 
-    private function prosesEdit() {
+        if (!empty($errors)) {
+            $_SESSION['error_kategori'] = implode("<br>", $errors);
+            $_SESSION['old_kategori_input'] = $_POST;
+            header("Location: /kategori/edit/" . $id);
+            exit;
+        }
+
         $data = [
-            'id' => (int)$_POST['id'],
-            'nama' => htmlspecialchars($_POST['nama']),
-            'deskripsi' => htmlspecialchars($_POST['deskripsi'])
+            'id' => $id,
+            'nama' => htmlspecialchars(trim($_POST['nama'])),
+            'deskripsi' => htmlspecialchars(trim($_POST['deskripsi']))
         ];
 
         if ($this->model->update($data)) {
+            unset($_SESSION['old_kategori_input']);
             $_SESSION['sukses'] = "Kategori berhasil diupdate!";
             header("Location: /kategori");
+            exit;
+        } else {
+            $_SESSION['error_kategori'] = "Gagal mengupdate kategori. Silakan coba lagi.";
+            $_SESSION['old_kategori_input'] = $_POST;
+            header("Location: /kategori/edit/" . $id);
             exit;
         }
     }
@@ -69,6 +113,25 @@ class KategoriController {
         }
         header("Location: /kategori");
         exit;
+    }
+
+    private function validasiInput($input)
+    {
+        $errors = [];
+
+        if (empty(trim($input['nama']))) {
+            $errors[] = "Nama kategori tidak boleh kosong.";
+        } elseif (strlen($input['nama']) > 255) { // Contoh batasan panjang
+            $errors[] = "Nama kategori terlalu panjang (maksimal 255 karakter).";
+        }
+
+        // Anda bisa menambahkan validasi lain untuk deskripsi jika perlu
+        // Misalnya, batasan panjang deskripsi
+        if (isset($input['deskripsi']) && strlen($input['deskripsi']) > 1000) {
+            $errors[] = "Deskripsi terlalu panjang (maksimal 1000 karakter).";
+        }
+
+        return $errors;
     }
 
     private function tampilkanView($view, $data = []) {

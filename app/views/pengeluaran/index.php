@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="d-flex justify-content-end p-2 me-3">
         <a class="btn btn-primary" href="/kategori">
@@ -17,10 +19,11 @@
     <div class="container mt-4">
         <h1 class="mb-4">Expense Tracker</h1>
 
-        <?php if(isset($_SESSION['sukses'])): ?>
-            <div class="alert alert-success"><?= $_SESSION['sukses']; unset($_SESSION['sukses']); ?></div>
+        <?php if (isset($_SESSION['sukses'])): ?>
+            <div class="alert alert-success"><?= $_SESSION['sukses'];
+                                                unset($_SESSION['sukses']); ?></div>
         <?php endif; ?>
-        
+
         <a href="/tambah" class="btn btn-primary mb-3">Tambah Pengeluaran</a>
 
         <form method="GET" class="row g-3 mb-4">
@@ -47,20 +50,21 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($pengeluaran as $p): ?>
-                <tr>
-                    <td><?= date('d M Y', strtotime($p['tanggal'])) ?></td>
-                    <td><?= $p['kategori_nama'] ?></td>
-                    <td>Rp <?= number_format($p['jumlah'], 0, ',', '.') ?></td>
-                    <td><?= $p['deskripsi'] ?></td>
-                    <td>
-                        <a href="/edit/<?= $p['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="/hapus/<?= $p['id'] ?>" class="btn btn-sm btn-danger" 
-                        onclick="return confirm('Yakin hapus pengeluaran ini?')">Hapus</a></td>
-                </tr>
+                <?php foreach ($pengeluaran as $p): ?>
+                    <tr>
+                        <td><?= date('d M Y', strtotime($p['tanggal'])) ?></td>
+                        <td><?= $p['kategori_nama'] ?></td>
+                        <td>Rp <?= number_format($p['jumlah'], 0, ',', '.') ?></td>
+                        <td><?= $p['deskripsi'] ?></td>
+                        <td>
+                            <a href="/edit/<?= $p['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="/hapus/<?= $p['id'] ?>" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin hapus pengeluaran ini?')">Hapus</a>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot> 
+            <tfoot>
                 <tr>
                     <th colspan="2">Total</th>
                     <th>Rp <?= number_format($total, 0, ',', '.') ?></th>
@@ -73,6 +77,22 @@
             <p>by Rifqi Makarim</p>
         </div>
 
+        <div class="d-flex justify-content-end p-2">
+            <?php if (isset($_SESSION['user_id'])):  ?>
+                <div class="nav-item">
+                    <a class="btn btn-outline-danger" href="/logout"><i class="bi-box-arrow-right"></i> Logout</a>
+                </div>
+            <?php else: ?>
+                <div class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </div>
+            <?php endif; ?>
+        </div>
+
     </div>
 </body>
+
 </html>
