@@ -21,7 +21,7 @@
 
         <?php if (isset($_SESSION['sukses'])): ?>
             <div class="alert alert-success"><?= $_SESSION['sukses'];
-                                                unset($_SESSION['sukses']); ?></div>
+                unset($_SESSION['sukses']); ?></div>
         <?php endif; ?>
 
         <a href="/tambah" class="btn btn-primary mb-3">Tambah Pengeluaran</a>

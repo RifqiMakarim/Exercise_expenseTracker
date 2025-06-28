@@ -80,25 +80,20 @@ class PengeluaranController {
         }
     }
 
-
     private function validasiInput($input) {
         $errors = [];
         
         if (empty($input['kategori_id'])) {
             $errors[] = "Kategori harus dipilih";
-        }
-        
+        }      
         if (empty($input['jumlah']) || $input['jumlah'] <= 0) {
             $errors[] = "Jumlah harus lebih dari 0";
-        }
-        
+        }       
         if (empty($input['tanggal'])) {
             $errors[] = "Tanggal harus diisi";
-        }
-        
+        }        
         return $errors;
     }
-    
 
 
     public function edit($id = null) {
@@ -110,7 +105,6 @@ class PengeluaranController {
                 header("Location: /edit/" . ($_POST['id'] ?? $id));
                 exit;
             }
-
             $this->prosesEdit();
         }
         
@@ -124,7 +118,6 @@ class PengeluaranController {
             echo "Pengeluaran tidak ditemukan.";
             exit;
         }    
-
         $this->tampilkanView('pengeluaran/edit', $data);
     }
 
