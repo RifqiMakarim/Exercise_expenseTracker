@@ -21,7 +21,6 @@
         $old_input = $_SESSION['old_input'] ?? []; 
         unset($_SESSION['old_input']); 
 
-        // Gunakan old input atau nilai default
         $tanggal_value = $old_input['tanggal'] ?? date('Y-m-d');
         $kategori_id_value = $old_input['kategori_id'] ?? '';
         $jumlah_value = $old_input['jumlah'] ?? '';

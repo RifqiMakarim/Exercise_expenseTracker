@@ -121,12 +121,10 @@ class KategoriController {
 
         if (empty(trim($input['nama']))) {
             $errors[] = "Nama kategori tidak boleh kosong.";
-        } elseif (strlen($input['nama']) > 255) { // Contoh batasan panjang
-            $errors[] = "Nama kategori terlalu panjang (maksimal 255 karakter).";
+        } elseif (strlen($input['nama']) > 20) { 
+            $errors[] = "Nama kategori terlalu panjang (maksimal 20 karakter).";
         }
 
-        // Anda bisa menambahkan validasi lain untuk deskripsi jika perlu
-        // Misalnya, batasan panjang deskripsi
         if (isset($input['deskripsi']) && strlen($input['deskripsi']) > 1000) {
             $errors[] = "Deskripsi terlalu panjang (maksimal 1000 karakter).";
         }
